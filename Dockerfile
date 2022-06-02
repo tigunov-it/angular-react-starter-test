@@ -1,5 +1,5 @@
 FROM nginx:alpine
-COPY --from=node dist/angular-starter /usr/share/nginx/html
+COPY --from=node . /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
 
 RUN chown -R nginx:nginx /var/run \
