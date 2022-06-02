@@ -26,7 +26,8 @@ jobs:
           node-version: 14.x
       - name: install
         run: npm i
-#      - name: test
+      - name: test
+        run: ls -la
 #        run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
 
 
@@ -62,6 +63,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: test directory
+        run: ls -la
 
       ### Sending email when deploy successfull
       - name: Send mail
