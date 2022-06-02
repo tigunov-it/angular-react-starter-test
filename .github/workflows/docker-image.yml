@@ -26,12 +26,13 @@ jobs:
           node-version: 14.x
       - name: install
         run: npm i
-      - name: test
-        run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+#      - name: test
+#        run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
 
 
 ######################### BUILD
   build-and-push-image:
+    needs: ['test']
     runs-on: ubuntu-latest
     permissions:
       contents: read
