@@ -1,5 +1,14 @@
 FROM nginx:alpine
-COPY --from=node . /usr/share/nginx/html
+
+RUN apk add --no-cache --update \
+    nginx \
+    npm \
+    && mkdir -p /usr/share/nginx/html \
+    /var/log/nginx/logs \
+    /usr/share/nginx/html \
+    /usr/share/nginx/html \
+
+COPY --from=node dist/angular-starter /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
 
 RUN chown -R nginx:nginx /var/run \
