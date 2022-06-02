@@ -1,7 +1,13 @@
-FROM nginx:1.21.6-alpine
+# stage 1
+FROM node:latest as node
+WORKDIR /app
+COPY . .
+RUN npm install
+RUN npm run build --prod
 
-COPY . /usr/share/nginx/html
-COPY ./nginx.conf /etc/nginx/nginx.conf
+# stage 2
+FROM nginx:alpine
+COPY --from=node /app/dist/angular-starter /usr/share/nginx/html
 
 RUN chown -R nginx:nginx /var/run \
     && chown -R nginx:nginx /var/lib \
@@ -9,3 +15,4 @@ RUN chown -R nginx:nginx /var/run \
     && chown -R nginx:nginx /etc/nginx/nginx.conf \
     && chown -R nginx:nginx /usr/share/nginx/html
 
+COPY nginx.conf /etc/nginx/nginx.conf
