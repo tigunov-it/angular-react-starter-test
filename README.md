@@ -1,4 +1,4 @@
-[![Create-and-publish-a-Docker-image](https://github.com/tigunov-it/angular-react-starter-test/actions/workflows/docker-image.yml/badge.svg)](https://github.com/tigunov-it/angular-react-starter-test/actions/workflows/docker-image.yml)
+[![Create-and-publish-a-Docker-image](https://github.com/tigunov-it/angular-react-starter-test/actions/workflows/ci.yaml/badge.svg)](https://github.com/tigunov-it/angular-react-starter-test/actions/workflows/ci.yaml)
 
 # Angular 13 & React 18 Examples Starter
 
