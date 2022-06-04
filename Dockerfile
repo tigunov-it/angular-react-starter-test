@@ -1,8 +1,9 @@
-# stage 1
+#stage 1
 FROM node:latest as node
 WORKDIR /app
-COPY . .
+COPY ./angular/. .
 RUN npm install
+RUN npm run build --if-present
 RUN npm run build --prod
 
 # stage 2
