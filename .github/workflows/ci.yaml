@@ -242,7 +242,7 @@ jobs:
       - uses: actions/checkout@v2
         name: get-job-time
       - run: echo ${GITHUB_RUN_ID}
-      - run: curl --user tigunov-it:${{secrets.API_TOKEN}} https://api.github.com/repos/tigunov-it/test_folders/actions/runs/${GITHUB_RUN_ID}/timing > job.json
+      - run: curl --user tigunov-it:${{secrets.API_TOKEN}} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing > job.json
       - run: ls -la
       - name: Send mail
         uses: dawidd6/action-send-mail@v3
