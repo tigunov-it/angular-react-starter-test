@@ -25,6 +25,7 @@ jobs:
         with:
           node-version: 16.x
           cache: 'npm'
+      - run: cp -r angular/. .
       - run: npm ci
       - run: npm run build --if-present
 #      - run: npm test
@@ -132,7 +133,7 @@ jobs:
           # Optional whether this connection use TLS (default is true if server_port is 465)
           secure: true
           # Optional plain body:
-          body: Build job of ${{github.repository}} completed successfully! 
+          body: Build job of ${{github.repository}} completed successfully!
           # Optional HTML body read from file:
           #html_body: file://README.html
           # Optional carbon copy recipients:
