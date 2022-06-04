@@ -2,36 +2,31 @@ name: Create-and-publish-a-Docker-image
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
-defaults:
-  run:
-    working-directory: angular
-
 jobs:
   ########################## TEST
   test:
-
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: angular
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js 16.x
         uses: actions/setup-node@v1
         with:
           node-version: 16.x
-          cache: 'npm'
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test -- --watch=false --browsers=ChromeHeadless
       - run: ls -la
 
-
-      ## Sending email when test is failed
+      ############ Sending email when test is failed
       - name: Send mail
         if: ${{ failure() }}
         uses: dawidd6/action-send-mail@v3
@@ -69,12 +64,11 @@ jobs:
           # Optional converting Markdown to HTML (set content_type to text/html too):
           convert_markdown: true
           # Optional attachments:
-          # attachments: attachments.zip,git.diff,./dist/static/*.js
+          attachments: time.txt
           # Optional priority: 'high', 'normal' (default) or 'low'
           priority: normal
-
-
-######################### BUILD
+  #
+  ####################### BUILD
   build-and-push-image:
     needs: ['test']
     runs-on: ubuntu-latest
@@ -233,5 +227,59 @@ jobs:
           convert_markdown: true
           # Optional attachments:
           # attachments: attachments.zip,git.diff,./dist/static/*.js
+          # Optional priority: 'high', 'normal' (default) or 'low'
+          priority: normal
+
+  ################## send job info
+  get-job-time:
+    needs: [ 'build-and-push-image']
+    #    needs: [ 'test']
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v2
+        name: get-job-time
+      - run: echo ${GITHUB_RUN_ID}
+      - run: curl --user tigunov-it:${{secrets.API_TOKEN}} https://api.github.com/repos/tigunov-it/test_folders/actions/runs/${GITHUB_RUN_ID}/timing > job.json
+      - run: ls -la
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          # Required mail server address:
+          server_address: smtp.gmail.com
+          # Required mail server port:
+          server_port: 465
+          # Optional (recommended): mail server username:
+          username: ${{secrets.MAIL_USERNAME}}
+          # Optional (recommended) mail server password:
+          password: ${{secrets.MAIL_PASSWORD}}
+          # Required mail subject:
+          subject: Github Actions job result
+          # Required recipients' addresses:
+          to: 192215@gmail.com
+          # Required sender full name (address can be skipped):
+          from: tigunov-it # <user@example.com>
+          # Optional whether this connection use TLS (default is true if server_port is 465)
+          secure: true
+          # Optional plain body:
+          body: Take info about ${{github.repository}}.
+          # Optional HTML body read from file:
+          #html_body: file://README.html
+          # Optional carbon copy recipients:
+          #cc: kyloren@example.com,leia@example.com
+          # Optional blind carbon copy recipients:
+          # bcc: r2d2@example.com,hansolo@example.com
+          # Optional recipient of the email response:
+          reply_to: 192215@gmail.com
+          # Optional Message ID this message is replying to:
+          # in_reply_to: <random-luke@example.com>
+          # Optional unsigned/invalid certificates allowance:
+          ignore_cert: true
+          # Optional converting Markdown to HTML (set content_type to text/html too):
+          convert_markdown: true
+          # Optional attachments:
+          attachments: job.json
           # Optional priority: 'high', 'normal' (default) or 'low'
           priority: normal
