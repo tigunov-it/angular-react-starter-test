@@ -19,7 +19,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - run: cp -r angular/. .
       - uses: actions/checkout@v3
       - name: Use Node.js 16.x
         uses: actions/setup-node@v3
