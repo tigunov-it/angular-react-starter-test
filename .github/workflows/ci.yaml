@@ -160,7 +160,7 @@ jobs:
       - uses: actions/checkout@v2
         name: get-job-time
       - run: echo ${GITHUB_RUN_ID}
-      - run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing > job.json
+      - run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing | grep "run_duration_ms" > time.txt
       - run: ls -la
       - name: Send mail
         uses: dawidd6/action-send-mail@v3
@@ -185,5 +185,5 @@ jobs:
           # in_reply_to: <random-luke@example.com>
           ignore_cert: true # Optional unsigned/invalid certificates allowance
           convert_markdown: true # Optional converting Markdown to HTML (set content_type to text/html too)
-          attachments: job.json # Optional attachments
+          attachments: time.txt # Optional attachments
           priority: normal # Optional priority: 'high', 'normal' (default) or 'low'
