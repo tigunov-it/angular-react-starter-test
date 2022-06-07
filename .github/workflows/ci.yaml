@@ -160,8 +160,13 @@ jobs:
       - uses: actions/checkout@v2
         name: get-job-time
       - run: echo ${GITHUB_RUN_ID}
-      - run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing | grep "run_duration_ms" > time.txt
+      - run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing  > time.txt
       - run: ls -la
+
+      - name: Parse job time
+        run: echo "::set-output name=JOB_TIME::$(cat time.txt | grep "duration_ms")"
+        id: time
+
       - name: Send mail
         uses: dawidd6/action-send-mail@v3
         with:
@@ -173,7 +178,7 @@ jobs:
           to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
           from: tigunov-it # <user@example.com> # Required sender full name (address can be skipped):
           secure: true # Optional whether this connection use TLS (default is true if server_port is 465)
-          body: Take info about ${{github.repository}} job # Optional plain body:
+          body: Take info about ${{github.repository}} job. Job info ${{ steps.time.outputs.JOB_TIME }} # Optional plain body:
           # Optional HTML body read from file:
           #html_body: file://README.html
           # Optional carbon copy recipients:
