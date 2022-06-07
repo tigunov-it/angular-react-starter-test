@@ -149,7 +149,7 @@ jobs:
           # attachments: time.txt # Optional attachments
           priority: normal # Optional priority: 'high', 'normal' (default) or 'low'
 
-################## send job info
+################## Send job info
   get-job-time:
     needs: [ 'build-and-push-image']
     runs-on: ubuntu-latest
