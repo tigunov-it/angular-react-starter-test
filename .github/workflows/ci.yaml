@@ -26,7 +26,8 @@ jobs:
       - run: npm test -- --watch=false --browsers=ChromeHeadless
 
         if: ${{ failure() }}
-      - run: echo "message_body=failure message test body" >> $GITHUB_ENV
+      - run: echo "message_body=failure_message_test_body" >> $GITHUB_ENV
+      - run: echo ${{ env.message_body }}
 
       ############ Sending email when test is failed
       - name: Send mail
