@@ -157,13 +157,13 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v2
 
       - name: Parse json info about to variable
         shell: bash
         run: echo "##[set-output name=json_workflow;]$(curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing)"
         id: extract_json
 
+      - uses: actions/checkout@v2
       - name: get-job-time
       - run: echo ${{ steps.extract_json.outputs.json_workflow }}
       - run: echo ${GITHUB_RUN_ID}
