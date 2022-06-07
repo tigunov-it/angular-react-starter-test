@@ -158,7 +158,16 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v2
-        name: get-job-time
+
+      - name: Parse json info about to variable
+        shell: bash
+        run: echo "##[set-output name=json_workflow;]$(curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing)"
+        id: extract_json
+
+      - name: Show info about workflow
+        run: echo ${{ steps.extract_json.outputs.json_workflow }}
+
+      - name: get-job-time
       - run: echo ${GITHUB_RUN_ID}
       - run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing > job.json
       - run: ls -la
@@ -173,7 +182,7 @@ jobs:
           to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
           from: tigunov-it # <user@example.com> # Required sender full name (address can be skipped):
           secure: true # Optional whether this connection use TLS (default is true if server_port is 465)
-          body: Take info about ${{github.repository}} job # Optional plain body:
+          body: Take info about ${{github.repository}} job. ${{ steps.extract_json.outputs.json_workflow }} # Optional plain body:
           # Optional HTML body read from file:
           #html_body: file://README.html
           # Optional carbon copy recipients:
