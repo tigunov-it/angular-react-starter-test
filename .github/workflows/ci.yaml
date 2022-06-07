@@ -27,6 +27,7 @@ jobs:
 
       - name: Add message body
         if: ${{ failure() }}
+        uses: bash
       - run: echo "message_body=failure_message_test_body" >> $GITHUB_ENV
       - run: echo ${{ env.message_body }}
 
