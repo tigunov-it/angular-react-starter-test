@@ -9,7 +9,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  ########################## TEST
+########################## TEST
   test:
     runs-on: ubuntu-latest
     defaults:
@@ -25,7 +25,7 @@ jobs:
       - run: npm run build --if-present
       - run: npm test -- --watch=false --browsers=ChromeHeadless
 
-      ############ Sending email when test is failed
+############ Sending email when test is failed
       - name: Send mail
         if: ${{ failure() }}
         uses: dawidd6/action-send-mail@v3
@@ -38,7 +38,7 @@ jobs:
           to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
           from: tigunov-it # <user@example.com> # Required sender full name (address can be skipped):
           secure: true # Optional whether this connection use TLS (default is true if server_port is 465)
-          body: Testing of ${{github.repository}} is failed! Body is ${{ env.message_body }} # Optional plain body:
+          body: Testing of ${{github.repository}} is failed! # Optional plain body:
           # Optional HTML body read from file:
           #html_body: file://README.html
           # Optional carbon copy recipients:
@@ -111,46 +111,32 @@ jobs:
       - name: Create message body
         run: echo ${{ env.message_body }}
 
-### Sending email when deploy successfull
+### Sending email when deploy successfully of failure
       - name: Send mail
         uses: dawidd6/action-send-mail@v3
         with:
-          # Required mail server address:
-          server_address: smtp.gmail.com
-          # Required mail server port:
-          server_port: 465
-          # Optional (recommended): mail server username:
-          username: ${{secrets.MAIL_USERNAME}}
-          # Optional (recommended) mail server password:
-          password: ${{secrets.MAIL_PASSWORD}}
-          # Required mail subject:
-          subject: Github Actions job result
-          # Required recipients' addresses:
-          to: ${{secrets.MAIL_ADDRESS}}
-          # Required sender full name (address can be skipped):
-          from: tigunov-it # <user@example.com>
-          # Optional whether this connection use TLS (default is true if server_port is 465)
-          secure: true
-          # Optional plain body:
-          body: ${{ env.message_body }}
+          server_address: smtp.gmail.com # Required mail server address
+          server_port: 465 # Required mail server port
+          username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
+          password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
+          subject: Github Actions job result # Required mail subject
+          to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
+          from: tigunov-it # <user@example.com> # Required sender full name (address can be skipped):
+          secure: true # Optional whether this connection use TLS (default is true if server_port is 465)
+          body: ${{ env.message_body }} # Optional plain body:
           # Optional HTML body read from file:
           #html_body: file://README.html
           # Optional carbon copy recipients:
           #cc: kyloren@example.com,leia@example.com
           # Optional blind carbon copy recipients:
           # bcc: r2d2@example.com,hansolo@example.com
-          # Optional recipient of the email response:
-          reply_to: ${{secrets.MAIL_ADDRESS}}
-          # Optional Message ID this message is replying to:
+          reply_to: ${{secrets.MAIL_PASSWORD}} # Optional recipient of the email response
+          # Optional Message ID this message is replying to
           # in_reply_to: <random-luke@example.com>
-          # Optional unsigned/invalid certificates allowance:
-          ignore_cert: true
-          # Optional converting Markdown to HTML (set content_type to text/html too):
-          convert_markdown: true
-          # Optional attachments:
-          # attachments: attachments.zip,git.diff,./dist/static/*.js
-          # Optional priority: 'high', 'normal' (default) or 'low'
-          priority: normal
+          ignore_cert: true # Optional unsigned/invalid certificates allowance
+          convert_markdown: true # Optional converting Markdown to HTML (set content_type to text/html too)
+          # attachments: time.txt # Optional attachments
+          priority: normal # Optional priority: 'high', 'normal' (default) or 'low'
 
 ################## send job info
   get-job-time:
@@ -168,39 +154,25 @@ jobs:
       - name: Send mail
         uses: dawidd6/action-send-mail@v3
         with:
-          # Required mail server address:
-          server_address: smtp.gmail.com
-          # Required mail server port:
-          server_port: 465
-          # Optional (recommended): mail server username:
-          username: ${{secrets.MAIL_USERNAME}}
-          # Optional (recommended) mail server password:
-          password: ${{secrets.MAIL_PASSWORD}}
-          # Required mail subject:
-          subject: Github Actions job result
-          # Required recipients' addresses:
-          to: ${{secrets.MAIL_ADDRESS}}
-          # Required sender full name (address can be skipped):
-          from: tigunov-it # <user@example.com>
-          # Optional whether this connection use TLS (default is true if server_port is 465)
-          secure: true
-          # Optional plain body:
-          body: Take info about ${{github.repository}}.
+          server_address: smtp.gmail.com # Required mail server address
+          server_port: 465 # Required mail server port
+          username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
+          password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
+          subject: Github Actions job result # Required mail subject
+          to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
+          from: tigunov-it # <user@example.com> # Required sender full name (address can be skipped):
+          secure: true # Optional whether this connection use TLS (default is true if server_port is 465)
+          body: Take info about ${{github.repository}} job # Optional plain body:
           # Optional HTML body read from file:
           #html_body: file://README.html
           # Optional carbon copy recipients:
           #cc: kyloren@example.com,leia@example.com
           # Optional blind carbon copy recipients:
           # bcc: r2d2@example.com,hansolo@example.com
-          # Optional recipient of the email response:
-          reply_to: ${{secrets.MAIL_ADDRESS}}
-          # Optional Message ID this message is replying to:
+          reply_to: ${{secrets.MAIL_PASSWORD}} # Optional recipient of the email response
+          # Optional Message ID this message is replying to
           # in_reply_to: <random-luke@example.com>
-          # Optional unsigned/invalid certificates allowance:
-          ignore_cert: true
-          # Optional converting Markdown to HTML (set content_type to text/html too):
-          convert_markdown: true
-          # Optional attachments:
-          attachments: job.json
-          # Optional priority: 'high', 'normal' (default) or 'low'
-          priority: normal
+          ignore_cert: true # Optional unsigned/invalid certificates allowance
+          convert_markdown: true # Optional converting Markdown to HTML (set content_type to text/html too)
+          attachments: job.json # Optional attachments
+          priority: normal # Optional priority: 'high', 'normal' (default) or 'low'
