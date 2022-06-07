@@ -1,14 +1,5 @@
-#stage 1
-FROM node:latest as node
-WORKDIR /app
-COPY ./angular/. .
-RUN npm install
-RUN npm run build --if-present
-RUN npm run build --prod
-
-# stage 2
 FROM nginx:alpine
-COPY --from=node /app/dist/angular-starter /usr/share/nginx/html
+COPY ./angular/dist/angular-starter /usr/share/nginx/html
 
 RUN chown -R nginx:nginx /var/run \
     && chown -R nginx:nginx /var/lib \
