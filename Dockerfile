@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM nginx:1.21.6-alpine
 COPY ./angular/dist/angular-starter /usr/share/nginx/html
 
 RUN chown -R nginx:nginx /var/run \
