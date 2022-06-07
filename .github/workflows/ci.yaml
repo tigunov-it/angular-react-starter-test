@@ -25,15 +25,13 @@ jobs:
       - run: npm run build --if-present
       - run: npm test -- --watch=false --browsers=ChromeHeadless
 
-      - name: Add message body
-        if: ${{ failure() }}
-        uses: actions/checkout@v3
-      - run: echo "message_body=failure_message_test_body" >> $GITHUB_ENV
-      - run: echo ${{ env.message_body }}
-
       ############ Sending email when test is failed
       - name: Send mail
         if: ${{ failure() }}
+
+      - run: echo "message_body=failure_message_test_body" >> $GITHUB_ENV
+      - run: echo ${{ env.message_body }}
+
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com # Required mail server address
