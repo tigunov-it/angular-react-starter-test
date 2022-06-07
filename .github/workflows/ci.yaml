@@ -29,8 +29,8 @@ jobs:
       - name: Send mail
         if: ${{ failure() }}
 
-      - run: echo "message_body=failure_message_test_body" >> $GITHUB_ENV
-      - run: echo ${{ env.message_body }}
+      run: echo "message_body=failure_message_test_body" >> $GITHUB_ENV
+      run: echo ${{ env.message_body }}
 
         uses: dawidd6/action-send-mail@v3
         with:
