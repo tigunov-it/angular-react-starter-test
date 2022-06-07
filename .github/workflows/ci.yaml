@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./angulargf
+        working-directory: ./angular
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js 16.x
@@ -28,10 +28,6 @@ jobs:
       ############ Sending email when test is failed
       - name: Send mail
         if: ${{ failure() }}
-
-      run: echo "message_body=failure_message_test_body" >> $GITHUB_ENV
-      run: echo ${{ env.message_body }}
-
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com # Required mail server address
@@ -101,9 +97,22 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+### Create message body failure
+      - name: Create message body
+        if: ${{ failure() }}
+        run: echo "message_body=Build job of ${{github.repository}} is failed!" >> $GITHUB_ENV
+
+### Create message body success
+      - name: Create message body
+        if: ${{ success() }}
+        run: echo "message_body=Build job of ${{github.repository}} is success!" >> $GITHUB_ENV
+
+### Show message body
+      - name: Create message body
+        run: echo ${{ env.message_body }}
+
 ### Sending email when deploy successfull
       - name: Send mail
-        if: ${{ success() }}
         uses: dawidd6/action-send-mail@v3
         with:
           # Required mail server address:
@@ -123,49 +132,7 @@ jobs:
           # Optional whether this connection use TLS (default is true if server_port is 465)
           secure: true
           # Optional plain body:
-          body: Build job of ${{github.repository}} completed successfully!
-          # Optional HTML body read from file:
-          #html_body: file://README.html
-          # Optional carbon copy recipients:
-          #cc: kyloren@example.com,leia@example.com
-          # Optional blind carbon copy recipients:
-          # bcc: r2d2@example.com,hansolo@example.com
-          # Optional recipient of the email response:
-          reply_to: ${{secrets.MAIL_ADDRESS}}
-          # Optional Message ID this message is replying to:
-          # in_reply_to: <random-luke@example.com>
-          # Optional unsigned/invalid certificates allowance:
-          ignore_cert: true
-          # Optional converting Markdown to HTML (set content_type to text/html too):
-          convert_markdown: true
-          # Optional attachments:
-          # attachments: attachments.zip,git.diff,./dist/static/*.js
-          # Optional priority: 'high', 'normal' (default) or 'low'
-          priority: normal
-
-### Sending email when deploy failed
-      - name: Send mail
-        if: ${{ failure() }}
-        uses: dawidd6/action-send-mail@v3
-        with:
-          # Required mail server address:
-          server_address: smtp.gmail.com
-          # Required mail server port:
-          server_port: 465
-          # Optional (recommended): mail server username:
-          username: ${{secrets.MAIL_USERNAME}}
-          # Optional (recommended) mail server password:
-          password: ${{secrets.MAIL_PASSWORD}}
-          # Required mail subject:
-          subject: Github Actions job result
-          # Required recipients' addresses:
-          to: ${{secrets.MAIL_ADDRESS}}
-          # Required sender full name (address can be skipped):
-          from: tigunov-it # <user@example.com>
-          # Optional whether this connection use TLS (default is true if server_port is 465)
-          secure: true
-          # Optional plain body:
-          body: Build job of ${{github.repository}} is failed!
+          body: ${{ env.message_body }}
           # Optional HTML body read from file:
           #html_body: file://README.html
           # Optional carbon copy recipients:
