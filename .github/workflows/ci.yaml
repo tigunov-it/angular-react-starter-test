@@ -17,6 +17,11 @@ jobs:
         working-directory: ./angular
     steps:
       - uses: actions/checkout@v3
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
       - name: Use Node.js 16.x
         uses: actions/setup-node@v3
         with:
