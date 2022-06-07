@@ -30,42 +30,28 @@ jobs:
         if: ${{ failure() }}
         uses: dawidd6/action-send-mail@v3
         with:
-          # Required mail server address:
-          server_address: smtp.gmail.com
-          # Required mail server port:
-          server_port: 465
-          # Optional (recommended): mail server username:
-          username: ${{secrets.MAIL_USERNAME}}
-          # Optional (recommended) mail server password:
-          password: ${{secrets.MAIL_PASSWORD}}
-          # Required mail subject:
-          subject: Github Actions job result
-          # Required recipients' addresses:
-          to: 192215@gmail.com
-          # Required sender full name (address can be skipped):
-          from: tigunov-it # <user@example.com>
-          # Optional whether this connection use TLS (default is true if server_port is 465)
-          secure: true
-          # Optional plain body:
-          body: Testing of ${{github.repository}} is failed!
+          server_address: smtp.gmail.com # Required mail server address
+          server_port: 465 # Required mail server port
+          username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
+          password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
+          subject: Github Actions job result # Required mail subject
+          to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
+          from: tigunov-it # <user@example.com> # Required sender full name (address can be skipped):
+          secure: true # Optional whether this connection use TLS (default is true if server_port is 465)
+          body: Testing of ${{github.repository}} is failed! # Optional plain body:
           # Optional HTML body read from file:
           #html_body: file://README.html
           # Optional carbon copy recipients:
           #cc: kyloren@example.com,leia@example.com
           # Optional blind carbon copy recipients:
           # bcc: r2d2@example.com,hansolo@example.com
-          # Optional recipient of the email response:
-          reply_to: 192215@gmail.com
-          # Optional Message ID this message is replying to:
+          reply_to: ${{secrets.MAIL_PASSWORD}} # Optional recipient of the email response
+          # Optional Message ID this message is replying to
           # in_reply_to: <random-luke@example.com>
-          # Optional unsigned/invalid certificates allowance:
-          ignore_cert: true
-          # Optional converting Markdown to HTML (set content_type to text/html too):
-          convert_markdown: true
-          # Optional attachments:
-          attachments: time.txt
-          # Optional priority: 'high', 'normal' (default) or 'low'
-          priority: normal
+          ignore_cert: true # Optional unsigned/invalid certificates allowance
+          convert_markdown: true # Optional converting Markdown to HTML (set content_type to text/html too)
+          attachments: time.txt # Optional attachments
+          priority: normal # Optional priority: 'high', 'normal' (default) or 'low'
 
 ####################### BUILD
   build-and-push-image:
@@ -127,7 +113,7 @@ jobs:
           # Required mail subject:
           subject: Github Actions job result
           # Required recipients' addresses:
-          to: 192215@gmail.com
+          to: ${{secrets.MAIL_ADDRESS}}
           # Required sender full name (address can be skipped):
           from: tigunov-it # <user@example.com>
           # Optional whether this connection use TLS (default is true if server_port is 465)
@@ -141,7 +127,7 @@ jobs:
           # Optional blind carbon copy recipients:
           # bcc: r2d2@example.com,hansolo@example.com
           # Optional recipient of the email response:
-          reply_to: 192215@gmail.com
+          reply_to: ${{secrets.MAIL_ADDRESS}}
           # Optional Message ID this message is replying to:
           # in_reply_to: <random-luke@example.com>
           # Optional unsigned/invalid certificates allowance:
@@ -169,7 +155,7 @@ jobs:
           # Required mail subject:
           subject: Github Actions job result
           # Required recipients' addresses:
-          to: 192215@gmail.com
+          to: ${{secrets.MAIL_ADDRESS}}
           # Required sender full name (address can be skipped):
           from: tigunov-it # <user@example.com>
           # Optional whether this connection use TLS (default is true if server_port is 465)
@@ -183,49 +169,7 @@ jobs:
           # Optional blind carbon copy recipients:
           # bcc: r2d2@example.com,hansolo@example.com
           # Optional recipient of the email response:
-          reply_to: 192215@gmail.com
-          # Optional Message ID this message is replying to:
-          # in_reply_to: <random-luke@example.com>
-          # Optional unsigned/invalid certificates allowance:
-          ignore_cert: true
-          # Optional converting Markdown to HTML (set content_type to text/html too):
-          convert_markdown: true
-          # Optional attachments:
-          # attachments: attachments.zip,git.diff,./dist/static/*.js
-          # Optional priority: 'high', 'normal' (default) or 'low'
-          priority: normal
-
-### Sending email when deploy cancelled
-      - name: Send mail
-        if: ${{ cancelled() }}
-        uses: dawidd6/action-send-mail@v3
-        with:
-          # Required mail server address:
-          server_address: smtp.gmail.com
-          # Required mail server port:
-          server_port: 465
-          # Optional (recommended): mail server username:
-          username: ${{secrets.MAIL_USERNAME}}
-          # Optional (recommended) mail server password:
-          password: ${{secrets.MAIL_PASSWORD}}
-          # Required mail subject:
-          subject: Github Actions job result
-          # Required recipients' addresses:
-          to: 192215@gmail.com
-          # Required sender full name (address can be skipped):
-          from: tigunov-it # <user@example.com>
-          # Optional whether this connection use TLS (default is true if server_port is 465)
-          secure: true
-          # Optional plain body:
-          body: Build job of ${{github.repository}} is cancelled!
-          # Optional HTML body read from file:
-          #html_body: file://README.html
-          # Optional carbon copy recipients:
-          #cc: kyloren@example.com,leia@example.com
-          # Optional blind carbon copy recipients:
-          # bcc: r2d2@example.com,hansolo@example.com
-          # Optional recipient of the email response:
-          reply_to: 192215@gmail.com
+          reply_to: ${{secrets.MAIL_ADDRESS}}
           # Optional Message ID this message is replying to:
           # in_reply_to: <random-luke@example.com>
           # Optional unsigned/invalid certificates allowance:
@@ -248,7 +192,7 @@ jobs:
       - uses: actions/checkout@v2
         name: get-job-time
       - run: echo ${GITHUB_RUN_ID}
-      - run: curl --user tigunov-it:${{secrets.API_TOKEN}} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing > job.json
+      - run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing > job.json
       - run: ls -la
       - name: Send mail
         uses: dawidd6/action-send-mail@v3
@@ -264,7 +208,7 @@ jobs:
           # Required mail subject:
           subject: Github Actions job result
           # Required recipients' addresses:
-          to: 192215@gmail.com
+          to: ${{secrets.MAIL_ADDRESS}}
           # Required sender full name (address can be skipped):
           from: tigunov-it # <user@example.com>
           # Optional whether this connection use TLS (default is true if server_port is 465)
@@ -278,7 +222,7 @@ jobs:
           # Optional blind carbon copy recipients:
           # bcc: r2d2@example.com,hansolo@example.com
           # Optional recipient of the email response:
-          reply_to: 192215@gmail.com
+          reply_to: ${{secrets.MAIL_ADDRESS}}
           # Optional Message ID this message is replying to:
           # in_reply_to: <random-luke@example.com>
           # Optional unsigned/invalid certificates allowance:
