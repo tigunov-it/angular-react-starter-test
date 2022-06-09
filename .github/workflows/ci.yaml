@@ -38,7 +38,7 @@ jobs:
 ############ Sending email when test is failed
       - name: Send mail
 #        if: ${{ failure() }}
-        uses: ./.github/actions/email-action.yaml
+        uses: ../.github/actions/email-action.yaml
         with:
           username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
           password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
@@ -76,131 +76,131 @@ jobs:
 #          priority: normal # Optional priority: 'high', 'normal' (default) or 'low'
 
 ####################### BUILD
-  build-and-push-image:
-    needs: ['test']
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./angular
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js 16.x
-        if: ${{ steps.extract_branch.outputs.branch == 'master' }} # if branch = master, then npm run build --prod
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
-      - run: npm ci
-      - run: npm run build --prod
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: test directory
-        run: ls -la
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-### Create message body failure
-      - name: Create message body failure
-        if: ${{ failure() }}
-        run: echo "message_body=Build job of ${{github.repository}} is failed!" >> $GITHUB_ENV
-
-### Create message body success
-      - name: Create message body success
-        if: ${{ success() }}
-        run: echo "message_body=Build job of ${{github.repository}} is success!" >> $GITHUB_ENV
-
-### Show message body
-      - name: Show message body
-        run: echo ${{ env.message_body }}
-
-### Sending email when deploy successfully of failure
-      - name: Send mail
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com # Required mail server address
-          server_port: 465 # Required mail server port
-          username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
-          password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
-          subject: Github Actions job result # Required mail subject
-          to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
-          from: tigunov-it # <user@example.com> # Required sender full name (address can be skipped):
-          secure: true # Optional whether this connection use TLS (default is true if server_port is 465)
-          body: ${{ env.message_body }} # Optional plain body:
-          # Optional HTML body read from file:
-          #html_body: file://README.html
-          # Optional carbon copy recipients:
-          #cc: kyloren@example.com,leia@example.com
-          # Optional blind carbon copy recipients:
-          # bcc: r2d2@example.com,hansolo@example.com
-          reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
-          # Optional Message ID this message is replying to
-          # in_reply_to: <random-luke@example.com>
-          ignore_cert: true # Optional unsigned/invalid certificates allowance
-          convert_markdown: true # Optional converting Markdown to HTML (set content_type to text/html too)
-          # attachments: time.txt # Optional attachments
-          priority: normal # Optional priority: 'high', 'normal' (default) or 'low'
-
-################## Send job info
-  get-job-time:
-    needs: [ 'build-and-push-image']
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v2
-        name: get-job-time
-      - run: echo ${GITHUB_RUN_ID}
-      - run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing  > time.txt
-      - run: ls -la
-
-      - name: Parse job time
-        run: echo "::set-output name=JOB_TIME::$(cat time.txt | grep "duration_ms")"
-        id: time
-
-      - name: Send mail
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com # Required mail server address
-          server_port: 465 # Required mail server port
-          username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
-          password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
-          subject: Github Actions job result # Required mail subject
-          to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
-          from: tigunov-it # <user@example.com> # Required sender full name (address can be skipped):
-          secure: true # Optional whether this connection use TLS (default is true if server_port is 465)
-          body: Take info about ${{github.repository}} job. Job info ${{ steps.time.outputs.JOB_TIME }} # Optional plain body:
-          # Optional HTML body read from file:
-          #html_body: file://README.html
-          # Optional carbon copy recipients:
-          #cc: kyloren@example.com,leia@example.com
-          # Optional blind carbon copy recipients:
-          # bcc: r2d2@example.com,hansolo@example.com
-          reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
-          # Optional Message ID this message is replying to
-          # in_reply_to: <random-luke@example.com>
-          ignore_cert: true # Optional unsigned/invalid certificates allowance
-          convert_markdown: true # Optional converting Markdown to HTML (set content_type to text/html too)
-          attachments: time.txt # Optional attachments
-          priority: normal # Optional priority: 'high', 'normal' (default) or 'low'
+#  build-and-push-image:
+#    needs: ['test']
+#    runs-on: ubuntu-latest
+#    defaults:
+#      run:
+#        working-directory: ./angular
+#    permissions:
+#      contents: read
+#      packages: write
+#
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: Use Node.js 16.x
+#        if: ${{ steps.extract_branch.outputs.branch == 'master' }} # if branch = master, then npm run build --prod
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: 16.x
+#      - run: npm ci
+#      - run: npm run build --prod
+#
+#      - name: Log in to the Container registry
+#        uses: docker/login-action@v2
+#        with:
+#          registry: ${{ env.REGISTRY }}
+#          username: ${{ github.actor }}
+#          password: ${{ secrets.GITHUB_TOKEN }}
+#
+#      - name: Extract metadata (tags, labels) for Docker
+#        id: meta
+#        uses: docker/metadata-action@v4
+#        with:
+#          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+#
+#      - name: test directory
+#        run: ls -la
+#
+#      - name: Build and push Docker image
+#        uses: docker/build-push-action@v3
+#        with:
+#          context: .
+#          push: true
+#          tags: ${{ steps.meta.outputs.tags }}
+#          labels: ${{ steps.meta.outputs.labels }}
+#
+#### Create message body failure
+#      - name: Create message body failure
+#        if: ${{ failure() }}
+#        run: echo "message_body=Build job of ${{github.repository}} is failed!" >> $GITHUB_ENV
+#
+#### Create message body success
+#      - name: Create message body success
+#        if: ${{ success() }}
+#        run: echo "message_body=Build job of ${{github.repository}} is success!" >> $GITHUB_ENV
+#
+#### Show message body
+#      - name: Show message body
+#        run: echo ${{ env.message_body }}
+#
+#### Sending email when deploy successfully of failure
+#      - name: Send mail
+#        uses: dawidd6/action-send-mail@v3
+#        with:
+#          server_address: smtp.gmail.com # Required mail server address
+#          server_port: 465 # Required mail server port
+#          username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
+#          password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
+#          subject: Github Actions job result # Required mail subject
+#          to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
+#          from: tigunov-it # <user@example.com> # Required sender full name (address can be skipped):
+#          secure: true # Optional whether this connection use TLS (default is true if server_port is 465)
+#          body: ${{ env.message_body }} # Optional plain body:
+#          # Optional HTML body read from file:
+#          #html_body: file://README.html
+#          # Optional carbon copy recipients:
+#          #cc: kyloren@example.com,leia@example.com
+#          # Optional blind carbon copy recipients:
+#          # bcc: r2d2@example.com,hansolo@example.com
+#          reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
+#          # Optional Message ID this message is replying to
+#          # in_reply_to: <random-luke@example.com>
+#          ignore_cert: true # Optional unsigned/invalid certificates allowance
+#          convert_markdown: true # Optional converting Markdown to HTML (set content_type to text/html too)
+#          # attachments: time.txt # Optional attachments
+#          priority: normal # Optional priority: 'high', 'normal' (default) or 'low'
+#
+################### Send job info
+#  get-job-time:
+#    needs: [ 'build-and-push-image']
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: read
+#      packages: write
+#    steps:
+#      - uses: actions/checkout@v2
+#        name: get-job-time
+#      - run: echo ${GITHUB_RUN_ID}
+#      - run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing  > time.txt
+#      - run: ls -la
+#
+#      - name: Parse job time
+#        run: echo "::set-output name=JOB_TIME::$(cat time.txt | grep "duration_ms")"
+#        id: time
+#
+#      - name: Send mail
+#        uses: dawidd6/action-send-mail@v3
+#        with:
+#          server_address: smtp.gmail.com # Required mail server address
+#          server_port: 465 # Required mail server port
+#          username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
+#          password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
+#          subject: Github Actions job result # Required mail subject
+#          to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
+#          from: tigunov-it # <user@example.com> # Required sender full name (address can be skipped):
+#          secure: true # Optional whether this connection use TLS (default is true if server_port is 465)
+#          body: Take info about ${{github.repository}} job. Job info ${{ steps.time.outputs.JOB_TIME }} # Optional plain body:
+#          # Optional HTML body read from file:
+#          #html_body: file://README.html
+#          # Optional carbon copy recipients:
+#          #cc: kyloren@example.com,leia@example.com
+#          # Optional blind carbon copy recipients:
+#          # bcc: r2d2@example.com,hansolo@example.com
+#          reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
+#          # Optional Message ID this message is replying to
+#          # in_reply_to: <random-luke@example.com>
+#          ignore_cert: true # Optional unsigned/invalid certificates allowance
+#          convert_markdown: true # Optional converting Markdown to HTML (set content_type to text/html too)
+#          attachments: time.txt # Optional attachments
+#          priority: normal # Optional priority: 'high', 'normal' (default) or 'low'
