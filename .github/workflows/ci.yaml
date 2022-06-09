@@ -12,9 +12,9 @@ jobs:
 ########################## TEST
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./angular
+#    defaults:
+#      run:
+#        working-directory: ./angular
     steps:
       - uses: actions/checkout@v3
 
