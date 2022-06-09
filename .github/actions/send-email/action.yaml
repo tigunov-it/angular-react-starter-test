@@ -1,5 +1,5 @@
 name: "Send email"
-description: "Send email acion"
+description: "Send email action"
 inputs:
   username:
     required: true
