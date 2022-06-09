@@ -27,7 +27,7 @@ jobs:
         run: echo ${{ steps.extract_branch.outputs.branch }}
 
       - name: Use Node.js 16.x
-        if: ${{ steps.extract_branch.outputs.branch == 'master' }}
+        if: ${{ steps.extract_branch.outputs.branch == 'dev' }}
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
