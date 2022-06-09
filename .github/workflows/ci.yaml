@@ -32,14 +32,15 @@ jobs:
         with:
           node-version: 16.x
       - run: ls -la
-      - run: npm ci
+#      - run: npm ci
 #      - run: npm run build --if-present
 #      - run: npm test -- --watch=false --browsers=ChromeHeadless
 
 ############ Sending email when test is failed
+      - uses: actions/checkout@v3
       - name: Send mail
 #        if: ${{ failure() }}
-        uses: ./../.github/actions/email-action.yaml
+        uses: ./.github/actions/email-action
         with:
           username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
           password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
