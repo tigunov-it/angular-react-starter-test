@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: 16.x
       - run: ls -la
-      - run: ls .github/actions/
+      - run: ls ./.github/actions/
 #      - run: npm ci
 #      - run: npm run build --if-present
 #      - run: npm test -- --watch=false --browsers=ChromeHeadless
