@@ -31,14 +31,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
+      - run: ls ./.github/
       - run: npm ci
-      - run: npm run build --if-present
-      - run: npm test -- --watch=false --browsers=ChromeHeadless
+#      - run: npm run build --if-present
+#      - run: npm test -- --watch=false --browsers=ChromeHeadless
 
 ############ Sending email when test is failed
       - name: Send mail
+      working-directory: .
 #        if: ${{ failure() }}
-        uses: ../.github/actions/email-action.yaml
+        uses: ./.github/actions/email-action.yaml
         with:
           username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
           password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
