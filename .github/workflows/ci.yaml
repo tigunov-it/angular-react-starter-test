@@ -2,14 +2,14 @@ name: Create-and-publish-a-Docker-image
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ master ]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-########################## TEST
+### Test
   test:
     runs-on: ubuntu-latest
     defaults:
@@ -27,7 +27,7 @@ jobs:
         run: echo ${{ steps.extract_branch.outputs.branch }}
 
       - name: Use Node.js 16.x
-        if: ${{ steps.extract_branch.outputs.branch == 'dev' }}
+        if: ${{ steps.extract_branch.outputs.branch == 'master' }}
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
@@ -35,7 +35,7 @@ jobs:
       - run: npm run build --if-present
       - run: npm test -- --watch=false --browsers=ChromeHeadless
 
-############ Sending email when test is failed
+### Sending email when test is failed
       - uses: actions/checkout@v3
       - name: Send mail
         if: ${{ failure() }}
@@ -47,7 +47,7 @@ jobs:
           body: Testing of ${{github.repository}} is failed! # Optional plain body:
           reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
 
-####################### BUILD
+### build
   build-and-push-image:
     needs: ['test']
     runs-on: ubuntu-latest
@@ -99,17 +99,14 @@ jobs:
         run: echo "::set-output name=JOB_TIME::$(cat time.txt | grep "duration_ms")"
         id: time
 
-### Create message body failure
       - name: Create message body failure
         if: ${{ failure() }}
         run: echo "message_body=Build job of ${{github.repository}} is failed!" >> $GITHUB_ENV
 
-### Create message body success
       - name: Create message body success
         if: ${{ success() }}
         run: echo "message_body=Build job of ${{github.repository}} is success! You measure execution time ${{ steps.time.outputs.JOB_TIME }} " >> $GITHUB_ENV
 
-### Show message body
       - name: Show message body
         run: echo ${{ env.message_body }}
 
@@ -123,31 +120,3 @@ jobs:
           to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
           body: ${{ env.message_body }} # Optional plain body:
           reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
-
-################## Send job info
-#  get-job-time:
-#    needs: [ 'build-and-push-image']
-#    runs-on: ubuntu-latest
-#    permissions:
-#      contents: read
-#      packages: write
-#    steps:
-#      - uses: actions/checkout@v2
-#        name: get-job-time
-#      - run: echo ${GITHUB_RUN_ID}
-#      - run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing  > time.txt
-#      - run: ls -la
-#
-#      - name: Parse job time
-#        run: echo "::set-output name=JOB_TIME::$(cat time.txt | grep "duration_ms")"
-#        id: time
-#
-#      - name: Send mail
-#        uses: ./.github/actions/send-email
-#        with:
-#          username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
-#          password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
-#          to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
-#          body: Take info about ${{github.repository}} job. Job info ${{ steps.time.outputs.JOB_TIME }} # Optional plain body:
-#          reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
-#          attachments: time.txt # Optional attachments
