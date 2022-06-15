@@ -92,6 +92,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: get-job-time
+        run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing  > time.txt
+
+      - name: Parse job time
+        run: echo "::set-output name=JOB_TIME::$(cat time.txt | grep "duration_ms")"
+        id: time
+
 ### Create message body failure
       - name: Create message body failure
         if: ${{ failure() }}
@@ -100,7 +107,7 @@ jobs:
 ### Create message body success
       - name: Create message body success
         if: ${{ success() }}
-        run: echo "message_body=Build job of ${{github.repository}} is success!" >> $GITHUB_ENV
+        run: echo "message_body=Build job of ${{github.repository}} is success! You measure execution time ${{ steps.time.outputs.JOB_TIME }} " >> $GITHUB_ENV
 
 ### Show message body
       - name: Show message body
@@ -118,29 +125,29 @@ jobs:
           reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
 
 ################## Send job info
-  get-job-time:
-    needs: [ 'build-and-push-image']
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v2
-        name: get-job-time
-      - run: echo ${GITHUB_RUN_ID}
-      - run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing  > time.txt
-      - run: ls -la
-
-      - name: Parse job time
-        run: echo "::set-output name=JOB_TIME::$(cat time.txt | grep "duration_ms")"
-        id: time
-
-      - name: Send mail
-        uses: ./.github/actions/send-email
-        with:
-          username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
-          password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
-          to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
-          body: Take info about ${{github.repository}} job. Job info ${{ steps.time.outputs.JOB_TIME }} # Optional plain body:
-          reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
-          attachments: time.txt # Optional attachments
+#  get-job-time:
+#    needs: [ 'build-and-push-image']
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: read
+#      packages: write
+#    steps:
+#      - uses: actions/checkout@v2
+#        name: get-job-time
+#      - run: echo ${GITHUB_RUN_ID}
+#      - run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing  > time.txt
+#      - run: ls -la
+#
+#      - name: Parse job time
+#        run: echo "::set-output name=JOB_TIME::$(cat time.txt | grep "duration_ms")"
+#        id: time
+#
+#      - name: Send mail
+#        uses: ./.github/actions/send-email
+#        with:
+#          username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
+#          password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
+#          to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
+#          body: Take info about ${{github.repository}} job. Job info ${{ steps.time.outputs.JOB_TIME }} # Optional plain body:
+#          reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
+#          attachments: time.txt # Optional attachments
