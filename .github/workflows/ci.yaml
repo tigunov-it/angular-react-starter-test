@@ -1,8 +1,6 @@
 name: Create-and-publish-a-Docker-image
 
-on:
-  push:
-    branches: [ master ]
+on: push
 
 env:
   REGISTRY: ghcr.io
@@ -18,16 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-
-      - name: Show branch name
-        run: echo ${{ steps.extract_branch.outputs.branch }}
-
       - name: Use Node.js 16.x
-        if: ${{ steps.extract_branch.outputs.branch == 'master' }}
+        if: ${{ github.ref }} == 'master'
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
@@ -81,9 +71,6 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: test directory
-        run: ls -la
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
@@ -92,11 +79,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: get-job-time
-        run: curl --user tigunov-it:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/tigunov-it/angular-react-starter-test/actions/runs/${GITHUB_RUN_ID}/timing  > time.txt
-
       - name: Parse job time
-        run: echo "::set-output name=JOB_TIME::$(cat time.txt | grep "duration_ms")"
+        run: echo "::set-output name=JOB_TIME::$(uptime)"
         id: time
 
       - name: Create message body failure
@@ -106,9 +90,6 @@ jobs:
       - name: Create message body success
         if: ${{ success() }}
         run: echo "message_body=Build job of ${{github.repository}} is success! You measure execution time ${{ steps.time.outputs.JOB_TIME }} " >> $GITHUB_ENV
-
-      - name: Show message body
-        run: echo ${{ env.message_body }}
 
 ### Sending email when deploy successfully of failure
       - uses: actions/checkout@v3
