@@ -107,13 +107,14 @@ jobs:
         run: echo ${{ steps.time_end.outputs.JOB_END_TIME }}
 
       - name: Get execution time
+        id: execution_time
         run: |
           let a=${{ steps.time_end.outputs.JOB_END_TIME }}-${{ needs.test.outputs.output_time }}
 #          echo $a
-          echo "execution_time=$(echo $a)" >> $GITHUB_ENV
+          echo "::set-output name=JOB_EXECUTION_TIME::$(echo $a)"
 
       - name: Show execution time
-        run: echo ${{ env.execution_time }}
+        run: ${{ needs.test.outputs.execution_time }}
 
 
       - name: Create message body success
