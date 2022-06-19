@@ -113,12 +113,12 @@ jobs:
         id: execution_time
 
       - name: Show execution time
-        run: ${{ needs.test.outputs.execution_time }}
+        run: ${{ steps.execution_time.outputs.JOB_EXECUTION_TIME }}
 
 
       - name: Create message body success
         if: ${{ success() }}
-        run: echo "message_body=Build job of ${{github.repository}} is success! You measure start time ${{ needs.test.outputs.output_time }}. You measure end time ${{ steps.time_end.outputs.JOB_END_TIME }} " >> $GITHUB_ENV
+        run: echo "message_body=Build job of ${{github.repository}} is success! You measure start time ${{ needs.test.outputs.output_time }}. You measure end time ${{ steps.time_end.outputs.JOB_END_TIME }}. Duration was ${{ steps.execution_time.outputs.JOB_EXECUTION_TIME }} seconds" >> $GITHUB_ENV
 
 ### Sending email when deploy successfully of failure
       - uses: actions/checkout@v3
