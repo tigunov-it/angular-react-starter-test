@@ -106,8 +106,8 @@ jobs:
 
       - name: run number with offset
         env:
-          START: ${{ needs.test.outputs.output_time }}
-          END: ${{ steps.time_end.outputs.JOB_END_TIME }}
+            START: ${{ needs.test.outputs.output_time }}
+            END: ${{ steps.time_end.outputs.JOB_END_TIME }}
         run: echo ::set-env name=EXEC_TIME::$(($END-$START))
 
       - name: Show execution time workflow
