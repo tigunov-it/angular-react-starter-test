@@ -108,7 +108,7 @@ jobs:
 
       - name: Get execution time
         run: |
-          let a = ${{ steps.time_end.outputs.JOB_END_TIME }}+${{ needs.test.outputs.output_time }}
+          let a=${{ steps.time_end.outputs.JOB_END_TIME }}+${{ needs.test.outputs.output_time }}
           echo $a
 
 
