@@ -54,7 +54,6 @@ jobs:
 
     env:
       START: ${{ needs.test.outputs.output_time }}
-      END: ${{ steps.time_end.outputs.JOB_END_TIME }}
 
     defaults:
       run:
@@ -111,7 +110,7 @@ jobs:
         run: echo ${{ steps.time_end.outputs.JOB_END_TIME }}
 
       - name: run number with offset
-        run: echo ::set-env name=EXEC_TIME::$(($END-$START))
+        run: echo ::set-env name=EXEC_TIME::$((10000000000-$START))
 
       - name: Show execution time workflow
         run: echo ${{ EXEC_TIME }}
