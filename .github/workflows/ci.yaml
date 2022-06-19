@@ -2,7 +2,7 @@ name: Create-and-publish-a-Docker-image
 
 on:
   push:
-    branches: [ feature/ci-improvements' ]
+    branches: [ feature/ci-improvements ]
 
 env:
   REGISTRY: ghcr.io
@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Use Node.js 16.x
-        if: ${{ github.ref }} == 'feature/ci-improvements''
+        if: ${{ github.ref }} == 'feature/ci-improvements'
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
@@ -53,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js 16.x
-        if: ${{ github.ref }} == 'feature/ci-improvements'' # if branch = master, then npm run build --prod
+        if: ${{ github.ref }} == 'feature/ci-improvements' # if branch = master, then npm run build --prod
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
