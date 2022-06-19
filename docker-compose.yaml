@@ -3,4 +3,4 @@ services:
   app-package:
     image: ghcr.io/tigunov-it/angular-react-starter-test:feature-ci-improvements
     ports:
-      - "8080:80"
+      - "8080:8080"
