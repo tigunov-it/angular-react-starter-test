@@ -9,14 +9,22 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-### Test
+  ### Test
   test:
     runs-on: ubuntu-latest
+
+    outputs:
+      output_time: ${{ steps.time_start.outputs.JOB_START_TIME }}
+
     defaults:
       run:
         working-directory: ./angular
     steps:
       - uses: actions/checkout@v3
+
+      - name: Get time start workflow
+        run: echo "::set-output name=JOB_START_TIME::$(date +%s)"
+        id: time_start
 
       - name: Use Node.js 16.x
         if: ${{ github.ref }} == 'dev'
@@ -27,7 +35,7 @@ jobs:
       - run: npm run build --if-present
       - run: npm test -- --watch=false --browsers=ChromeHeadless
 
-### Sending email when test is failed
+      ### Sending email when test is failed
       - uses: actions/checkout@v3
       - name: Send mail
         if: ${{ failure() }}
@@ -39,19 +47,22 @@ jobs:
           body: Testing of ${{github.repository}} is failed! # Optional plain body:
           reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
 
-### build
+  ### build
   build-and-push-image:
     needs: ['test']
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: ./angular
+
     permissions:
       contents: read
       packages: write
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Use Node.js 16.x
         if: ${{ github.ref }} == 'dev' # if branch = master, then npm run build --prod
         uses: actions/setup-node@v3
@@ -81,19 +92,31 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Parse job time
-        run: echo "::set-output name=JOB_TIME::$(uptime)"
-        id: time
-
       - name: Create message body failure
         if: ${{ failure() }}
         run: echo "message_body=Build job of ${{github.repository}} is failed!" >> $GITHUB_ENV
 
+      - name: Get time end workflow
+        run: echo "::set-output name=JOB_END_TIME::$(date +%s)"
+        id: time_end
+
+      - name: Show start time
+        run: echo ${{ needs.test.outputs.output_time }}
+
+      - name: Show end time
+        run: echo ${{ steps.time_end.outputs.JOB_END_TIME }}
+
+      - name: Get execution time
+        run: |
+          let a=${{ steps.time_end.outputs.JOB_END_TIME }}-${{ needs.test.outputs.output_time }}
+          echo "::set-output name=JOB_EXECUTION_TIME::$(echo $a)"
+        id: execution_time
+
       - name: Create message body success
         if: ${{ success() }}
-        run: echo "message_body=Build job of ${{github.repository}} is success! You measure execution time ${{ steps.time.outputs.JOB_TIME }} " >> $GITHUB_ENV
+        run: echo "message_body=Build job of ${{github.repository}} is success! Duration was ${{ steps.execution_time.outputs.JOB_EXECUTION_TIME }} seconds" >> $GITHUB_ENV
 
-### Sending email when deploy successfully of failure
+      ### Sending email when deploy successfully of failure
       - uses: actions/checkout@v3
       - name: Send mail
         uses: ./.github/actions/send-email
@@ -101,5 +124,5 @@ jobs:
           username: ${{secrets.MAIL_USERNAME}} # Optional (recommended): mail server username
           password: ${{secrets.MAIL_PASSWORD}} # Optional (recommended) mail server password
           to: ${{secrets.MAIL_ADDRESS}} # Required recipients' addresses:
-          body: ${{ env.message_body }} # Optional plain body:
+          body: ${{env.message_body}} # Optional plain body:
           reply_to: ${{secrets.MAIL_USERNAME}} # Optional recipient of the email response
