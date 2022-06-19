@@ -113,7 +113,7 @@ jobs:
         id: execution_time
 
       - name: Show execution time
-        run: ${{ steps.execution_time.outputs.JOB_EXECUTION_TIME }}
+        run: echo ${{ steps.execution_time.outputs.JOB_EXECUTION_TIME }}
 
 
       - name: Create message body success
