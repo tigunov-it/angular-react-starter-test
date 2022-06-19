@@ -98,6 +98,10 @@ jobs:
         run: echo "::set-output name=JOB_END_TIME::$(date +%s)"
         id: time_end
 
+      - name: Get execution time workflow
+        run: echo "${{ steps.time_end.outputs.JOB_END_TIME }}-${{ needs.test.outputs.output_time }}"
+        id: time_execution
+
       - name: Create message body success
         if: ${{ success() }}
         run: echo "message_body=Build job of ${{github.repository}} is success! You measure start time ${{ needs.test.outputs.output_time }}. You measure end time ${{ steps.time_end.outputs.JOB_END_TIME }} " >> $GITHUB_ENV
