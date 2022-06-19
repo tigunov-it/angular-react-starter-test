@@ -93,6 +93,16 @@ jobs:
         if: ${{ success() }}
         run: echo "message_body=Build job of ${{github.repository}} is success! You measure execution time ${{ steps.time.outputs.JOB_TIME }} " >> $GITHUB_ENV
 
+      - name: Post Test Timing deltas on PR
+        steps:
+            - uses: actions/checkout@v2
+              - name: PR Action
+                uses: javierfernandes/jest-timing-action@master
+                with:
+                  threshold: 25
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
 ### Sending email when deploy successfully of failure
       - uses: actions/checkout@v3
       - name: Send mail
