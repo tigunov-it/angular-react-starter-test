@@ -100,12 +100,6 @@ jobs:
         run: echo "::set-output name=JOB_END_TIME::$(date +%s)"
         id: time_end
 
-      - name: Show start time
-        run: echo ${{ needs.test.outputs.output_time }}
-
-      - name: Show end time
-        run: echo ${{ steps.time_end.outputs.JOB_END_TIME }}
-
       - name: Get execution time
         run: |
           let a=${{ steps.time_end.outputs.JOB_END_TIME }}-${{ needs.test.outputs.output_time }}
