@@ -101,19 +101,16 @@ jobs:
         id: time_end
 
       - name: Show start time
-        run: echo "::set-output name=start_time::${{ needs.test.outputs.output_time }}"
-        id: start_time
+        run: echo ${{ needs.test.outputs.output_time }}
 
       - name: Show end time
-        run: echo "::set-output name=end_time::${{ steps.time_end.outputs.JOB_END_TIME }}"
-        id: end_time
+        run: echo ${{ steps.time_end.outputs.JOB_END_TIME }}
 
-      - name: Calculate execution time workflow
-        run: echo "::set-output name=execution_time::$(( steps.end_time.outputs.end_time-steps.start_time.outputs.start_time ))"
-        id: execution_time
+      - name: Get execution time
+        run: |
+          let a = ${{ steps.time_end.outputs.JOB_END_TIME }}+${{ needs.test.outputs.output_time }}
+          echo $a
 
-      - name: Show execution time workflow
-        run: echo ${{ steps.execution_time.outputs.execution_time }}
 
       - name: Create message body success
         if: ${{ success() }}
