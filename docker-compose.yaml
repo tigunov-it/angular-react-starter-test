@@ -1,6 +1,6 @@
 version: "2.1"
 services:
   app-package:
-    image: ghcr.io/tigunov-it/angular-react-starter-test:master
+    image: ghcr.io/tigunov-it/angular-react-starter-test:dev
     ports:
       - "8080:8080"
