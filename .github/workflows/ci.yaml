@@ -104,11 +104,15 @@ jobs:
       - name: Show end time
         run: echo ${{ steps.time_end.outputs.JOB_END_TIME }}
 
-      - name: Get execution time workflow
-        run: echo "execution_time=${{ steps.time_end.outputs.JOB_END_TIME }}-${{ needs.test.outputs.output_time }}" >> $GITHUB_ENV
+      - name: run number with offset
+          env:
+            START: ${{ needs.test.outputs.output_time }}
+            END: ${{ steps.time_end.outputs.JOB_END_TIME }}
+          run: |
+            echo ::set-env name=EXEC_TIME::$(($END-$START))
 
       - name: Show execution time workflow
-        run: echo ${{ env.execution_time }}
+        run: echo ${{ EXEC_TIME }}
 
       - name: Create message body success
         if: ${{ success() }}
