@@ -99,8 +99,10 @@ jobs:
         id: time_end
 
       - name: Get execution time workflow
-        run: echo "${{ steps.time_end.outputs.JOB_END_TIME }}-${{ needs.test.outputs.output_time }}"
-        id: time_execution
+        run: echo ::set-env name=JOB_EXECUTION_TIME::$(($steps.time_end.outputs.JOB_END_TIME-$needs.test.outputs.output_time))
+
+      - name: Show execution time workflow
+        run: echo $JOB_EXECUTION_TIME
 
       - name: Create message body success
         if: ${{ success() }}
