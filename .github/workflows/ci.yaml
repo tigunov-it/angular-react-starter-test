@@ -51,9 +51,15 @@ jobs:
   build-and-push-image:
     needs: ['test']
     runs-on: ubuntu-latest
+
+    env:
+      START: ${{ needs.test.outputs.output_time }}
+      END: ${{ steps.time_end.outputs.JOB_END_TIME }}
+
     defaults:
       run:
         working-directory: ./angular
+
     permissions:
       contents: read
       packages: write
@@ -105,9 +111,6 @@ jobs:
         run: echo ${{ steps.time_end.outputs.JOB_END_TIME }}
 
       - name: run number with offset
-        env:
-            START: ${{ needs.test.outputs.output_time }}
-            END: ${{ steps.time_end.outputs.JOB_END_TIME }}
         run: echo ::set-env name=EXEC_TIME::$(($END-$START))
 
       - name: Show execution time workflow
