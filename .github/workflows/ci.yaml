@@ -52,9 +52,6 @@ jobs:
     needs: ['test']
     runs-on: ubuntu-latest
 
-    env:
-      START: ${{ needs.test.outputs.output_time }}
-
     defaults:
       run:
         working-directory: ./angular
@@ -104,16 +101,19 @@ jobs:
         id: time_end
 
       - name: Show start time
-        run: echo ${{ needs.test.outputs.output_time }}
+        run: echo "::set-output name=start_time::${{ needs.test.outputs.output_time }}"
+        id: start_time
 
       - name: Show end time
-        run: echo ${{ steps.time_end.outputs.JOB_END_TIME }}
+        run: echo "::set-output name=end_time::${{ steps.time_end.outputs.JOB_END_TIME }}"
+        id: end_time
 
-      - name: run number with offset
-        run: echo ::set-env name=EXEC_TIME::$((10000000000-$START))
+      - name: Calculate execution time workflow
+        run: echo "::set-output name=execution_time::$(( steps.end_time.outputs.end_time-steps.start_time.outputs.start_time ))"
+        id: execution_time
 
       - name: Show execution time workflow
-        run: echo ${{ EXEC_TIME }}
+        run: echo ${{ steps.execution_time.outputs.execution_time }}
 
       - name: Create message body success
         if: ${{ success() }}
