@@ -97,7 +97,7 @@ jobs:
         uses: javierfernandes/jest-timing-action@master
         with:
           threshold: 25
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
 
 ### Sending email when deploy successfully of failure
       - uses: actions/checkout@v3
