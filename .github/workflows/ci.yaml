@@ -18,6 +18,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Get time start workflow
+        run: echo "::set-output name=JOB_START_TIME::$(date +%s)"
+        id: time_start
+
+
+
       - name: Use Node.js 16.x
         if: ${{ github.ref }} == 'feature/ci-improvements'
         uses: actions/setup-node@v3
@@ -81,9 +87,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Parse job time
-        run: echo "::set-output name=JOB_TIME::$(uptime)"
-        id: time
+      - name: Get time end workflow
+        run: echo "::set-output name=JOB_END_TIME::$(date +%s)"
+        id: time_end
+
+#      - name: Parse job time
+#        run: echo "::set-output name=JOB_TIME::$(uptime)"
+#        id: time
 
       - name: Create message body failure
         if: ${{ failure() }}
@@ -91,13 +101,7 @@ jobs:
 
       - name: Create message body success
         if: ${{ success() }}
-        run: echo "message_body=Build job of ${{github.repository}} is success! You measure execution time ${{ steps.time.outputs.JOB_TIME }} " >> $GITHUB_ENV
-
-      - name: PR Action
-        uses: javierfernandes/jest-timing-action@master
-        with:
-          threshold: 25
-          GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
+        run: echo "message_body=Build job of ${{github.repository}} is success! You measure start time ${{ steps.time_start.outputs.JOB_START_TIME }}. You measure start time ${{ steps.time_end.outputs.JOB_END_TIME }} " >> $GITHUB_ENV
 
 ### Sending email when deploy successfully of failure
       - uses: actions/checkout@v3
